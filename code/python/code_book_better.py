@@ -1,3 +1,4 @@
+import os
 import json
 import nbformat
 from pathlib import Path
@@ -14,7 +15,7 @@ if not PROMPT_TEMPLATE_PATH.exists():
 PROMPT_TEMPLATE = PROMPT_TEMPLATE_PATH.read_text(encoding="utf-8")
 
 # Initialize GenAI client
-client = genai.Client(api_key='REDACTED')
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 # --------------------------
 # UTILITY FUNCTIONS

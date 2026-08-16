@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import json
@@ -5,7 +6,7 @@ from pathlib import Path
 from google import genai
 
 # ---------- Initialize client ----------
-client = genai.Client(api_key='REDACTED')
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 # ---------- Utility ----------
 def clean_value(val):
