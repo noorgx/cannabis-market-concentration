@@ -1,0 +1,198 @@
+# Track & Trace Data Codebook
+
+### Overview Section
+
+This dataset provides a comprehensive record of distribution events within the Track & Trace system, detailing the movement of items between various facilities. It is designed to offer insights into supply chain logistics, item categories, and associated quantities and wholesale prices. Each row in the `Distribution_cleaned` table represents a single distribution event or shipment of items from an origin facility to a destination facility. The overall data source is the Track & Trace system, with the collection period and extraction date not explicitly specified in the provided metadata.
+
+**Assumptions:**
+*   The `_cleaned` suffix in the table name `Distribution_cleaned` implies that some level of data preprocessing and cleaning has already been performed. However, the specifics of these cleaning steps are not detailed.
+*   Quantity values (e.g., `shipped_quantity`, `received_quantity`) are assumed to be in weight-based units (e.g., grams, pounds) given their float data type and typical use in supply chain tracking for bulk goods.
+*   Price values are assumed to be in a standard currency unit.
+
+### Table Inventory
+
+*   **Distribution_cleaned:** This table records individual distribution events, tracking items shipped and received between different facility types and locations.
+
+## Table: Distribution_cleaned
+
+*   **Purpose:** To track the movement of items, including their quantities and wholesale prices, between various facilities within the supply chain.
+*   **What one row represents:** One distinct distribution event or shipment of a specific item category from an origin facility to a destination facility.
+*   **Primary key(s):**
+*   **Relationships:**
+*   **Number of rows and columns:** 2,268,507 rows, 14 columns.
+*   **Column Dictionary (in JSON format)**
+
+```json
+[
+  {
+    "Column Name": "origin_facility_type",
+    "Type": "object",
+    "Units": "",
+    "Description": "The type of the facility from which items were shipped.",
+    "Allowed Values / Range": "Example: A-Large Indoor",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "origin_city",
+    "Type": "object",
+    "Units": "",
+    "Description": "The city where the originating facility is located.",
+    "Allowed Values / Range": "Example: Cathedral City",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "origin_county",
+    "Type": "object",
+    "Units": "",
+    "Description": "The county where the originating facility is located.",
+    "Allowed Values / Range": "Example: Riverside",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "destination_facility_type",
+    "Type": "object",
+    "Units": "",
+    "Description": "The type of the facility to which items were shipped.",
+    "Allowed Values / Range": "Example: A-Processor",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "destination_city",
+    "Type": "object",
+    "Units": "",
+    "Description": "The city where the destination facility is located.",
+    "Allowed Values / Range": "Example: Lancaster",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "destination_county",
+    "Type": "object",
+    "Units": "",
+    "Description": "The county where the destination facility is located.",
+    "Allowed Values / Range": "Example: Los Angeles",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "item_category",
+    "Type": "object",
+    "Units": "",
+    "Description": "The category of the item being distributed.",
+    "Allowed Values / Range": "Example: Flower",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "item_quantity_type",
+    "Type": "object",
+    "Units": "",
+    "Description": "The method or type of quantity measurement for the item.",
+    "Allowed Values / Range": "Example: WeightBased",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "month",
+    "Type": "object",
+    "Units": "",
+    "Description": "The month in which the distribution event occurred.",
+    "Allowed Values / Range": "Example: December",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "year",
+    "Type": "int64",
+    "Units": "",
+    "Description": "The year in which the distribution event occurred.",
+    "Allowed Values / Range": "[2022.0, 2025.0]",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "shipped_quantity",
+    "Type": "float64",
+    "Units": "weight units (e.g., grams, pounds)",
+    "Description": "The quantity of items shipped from the origin facility.",
+    "Allowed Values / Range": "[-100.0, 4198361791.36]",
+    "Missing %": 0.0,
+    "Cleaning / Notes": "Contains negative values, which may indicate returns, adjustments, or data entry errors. Requires investigation and specific handling to ensure accurate quantity tracking."
+  },
+  {
+    "Column Name": "shipped_wholesale_price",
+    "Type": "float64",
+    "Units": "currency units",
+    "Description": "The wholesale price associated with the shipped quantity.",
+    "Allowed Values / Range": "[0.0, 144364409.32]",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "received_quantity",
+    "Type": "float64",
+    "Units": "weight units (e.g., grams, pounds)",
+    "Description": "The quantity of items received at the destination facility.",
+    "Allowed Values / Range": "[0.0, 4198361791.36]",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  },
+  {
+    "Column Name": "received_wholesale_price",
+    "Type": "float64",
+    "Units": "currency units",
+    "Description": "The wholesale price associated with the received quantity.",
+    "Allowed Values / Range": "[0.0, 144364409.32]",
+    "Missing %": 0.0,
+    "Cleaning / Notes": ""
+  }
+]
+```
+
+### Data Quality & Anomalies Section
+
+This section summarizes identified data quality issues and anomalies within the dataset.
+
+*   **Issue:** Negative values observed in `shipped_quantity`.
+*   **Likely cause:** Negative quantities typically do not represent physical shipments. This could be due to:
+    *   **Returns or Adjustments:** The system might record returns or inventory adjustments as negative shipments.
+    *   **Data Entry Errors:** Incorrect manual input or system glitches.
+    *   **Specific Business Logic:** An undocumented business rule that uses negative values for certain types of transactions.
+*   **Recommended handling rule:**
+    1.  **Flag:** Identify and flag all rows where `shipped_quantity` is negative.
+    2.  **Investigate:** Consult with domain experts to understand the true meaning of negative quantities.
+    3.  **Conditional Exclusion/Imputation:** If negative values represent invalid data, exclude these rows from analyses involving total quantities. If they represent returns, consider treating them as a separate transaction type or adjusting inventory levels accordingly rather than summing them directly with positive shipments. If imputation is necessary, replace with 0 or a contextually appropriate value after investigation.
+
+### Reproducible Cleaning Plan
+
+1.  **Identify Negative Shipments:** Create a new boolean column, `is_negative_shipment`, in the `Distribution_cleaned` table. This column will be `TRUE` for rows where `shipped_quantity` is less than 0 and `FALSE` otherwise.
+2.  **Analyze Negative Shipments:** Perform a preliminary analysis on the flagged rows to understand their frequency, magnitude, and correlation with other columns (e.g., `item_category`, `facility_type`). This step aims to provide context for the anomaly.
+3.  **Consult for Business Rules:** Engage with data owners or business stakeholders to clarify the meaning and intended handling of negative `shipped_quantity` values.
+4.  **Apply Handling Rule:** Based on the consultation, either filter out these rows for analyses requiring positive quantities, adjust them to zero if they are errors, or process them as returns if that is their intended meaning. For example, if they represent returns, they might be excluded from "total outbound volume" calculations but included in "net movement" calculations.
+
+### Limitations & Trust Section
+
+*   **Undefined Primary Keys and Relationships:** The dataset lacks explicit primary key definitions and relationships between tables (though only one table is provided). This limits the ability to uniquely identify records or integrate this data with other datasets without further investigation.
+*   **Ambiguous Units:** While units for quantity and price have been inferred, they are not explicitly stated. This could lead to misinterpretation if the actual units (e.g., grams vs. kilograms, USD vs. CAD) differ from assumptions.
+*   **"Cleaned" Status:** The `_cleaned` suffix implies prior data processing, but the specific cleaning steps, transformations, and assumptions made during that process are unknown. This opacity reduces trust in the data's current state without further documentation of the cleaning pipeline.
+*   **Negative `shipped_quantity`:** The presence of negative values in `shipped_quantity` indicates an unresolved data quality issue or an undocumented business rule that requires validation to ensure accurate interpretation of distribution volumes.
+
+To validate these elements, it is necessary to:
+*   Obtain the full data dictionary from the source system.
+*   Consult with the data engineering team or data owners regarding the `_cleaned` process.
+*   Clarify business rules for `shipped_quantity` with negative values.
+
+### Appendix: Quick Reference
+
+*   **Negative `shipped_quantity`:** Flag and investigate. Do not sum directly with positive quantities without understanding their meaning (e.g., returns vs. errors).
+*   **Units:** Assume `shipped_quantity` and `received_quantity` are in weight units (e.g., grams, pounds) and prices are in currency units, but verify with data owners.
+*   **Data Source:** Data originates from the Track & Trace system; specific collection period and extraction date are not provided.
+*   **Table `_cleaned` suffix:** Indicates prior processing; details of cleaning steps are not available and should be requested.
+
+### Notes for Reviewers
+
+Reviewers are requested to verify the accuracy of column descriptions and inferred units. Particular attention should be paid to the proposed handling rule for negative `shipped_quantity` values, ensuring it aligns with business requirements and data integrity standards. Additionally, any missing information, such as primary keys, relationships, or the specifics of the `_cleaned` process, should be highlighted for further investigation to ensure the codebook is complete and the data is fully reproducible and trustworthy.
